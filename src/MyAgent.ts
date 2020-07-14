@@ -3,7 +3,8 @@ import { ChangeSetPostPushEvent, EventSubscription, IModelHubClient, IModelHubEv
 import { ApplicationType, AuthorizedBackendRequestContext, BriefcaseDb, BriefcaseManager, IModelHost, IModelHostConfiguration } from "@bentley/imodeljs-backend";
 import { IModelVersion, SyncMode } from "@bentley/imodeljs-common";
 import { AgentConfig } from "./AgentConfig";
-import { watchSlabs } from "./WatchSlabs";
+import { flagLongLeadItems } from "./FlagLongLeadItems";
+import { sendEmail } from "./SendEmail";
 
 export class MyAgent {
   private readonly config: AgentConfig;
@@ -69,7 +70,9 @@ export class MyAgent {
     ctx.enter();
 
     // TODO....
-    await watchSlabs(ctx, iModel);
+    const report = await flagLongLeadItems(ctx, iModel);
+    if (report)
+      await sendEmail(this.config, report);
 
     // Close iModel
     iModel.close();
