@@ -3,6 +3,7 @@ import { ChangeSetPostPushEvent, EventSubscription, IModelHubClient, IModelHubEv
 import { ApplicationType, AuthorizedBackendRequestContext, BriefcaseDb, BriefcaseManager, IModelHost, IModelHostConfiguration } from "@bentley/imodeljs-backend";
 import { IModelVersion, SyncMode } from "@bentley/imodeljs-common";
 import { AgentConfig } from "./AgentConfig";
+import { watchSlabs } from "./WatchSlabs";
 
 export class MyAgent {
   private readonly config: AgentConfig;
@@ -68,7 +69,7 @@ export class MyAgent {
     ctx.enter();
 
     // TODO....
-    console.log(iModel.rootSubject.name);
+    await watchSlabs(ctx, iModel);
 
     // Close iModel
     iModel.close();
