@@ -10,10 +10,12 @@ To build and run this locally, you will need to clone this repo, `npm install`, 
 
 We've also included the IFC sample data we used in today's session.  If you want to use the same data, you can create an iModel, and the use the [iTwin Synchronizer](https://www.bentley.com/en/products/product-line/digital-twins/itwin-synchronizer) to synchronize the three files in the `ifc-files\base\` directory to import the initial dataset.
 
-> When creating your iModel, be sure to set correct project extents if you want to be able to visualize anything in Design Review.  
-> We recommend using the following location in Boston, MA (centered roughly at `42°21'19.8"N 71°03'31.9"W`):
->
-> ![project-extents](https://i.ibb.co/kMqgSTq/extents-1.png)
+> The sample IFC files are stored using Git LFS.  You will need to [install the Git LFS client](https://git-lfs.github.com/) if you do not already have it. 
+
+When creating your iModel, be sure to set correct project extents if you want to be able to visualize anything in Design Review.  
+We recommend using the following location in Boston, MA (centered roughly at `42°21'19.8"N 71°03'31.9"W`):
+
+![project-extents](https://i.ibb.co/kMqgSTq/extents-1.png)
 
 ### Sample Changes
 
