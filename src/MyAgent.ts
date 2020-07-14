@@ -1,7 +1,9 @@
 import { AgentAuthorizationClient, AzureFileHandler } from "@bentley/backend-itwin-client";
-import { ChangeSetPostPushEvent, EventSubscription, IModelHubClient, IModelHubEventType } from "@bentley/imodelhub-client";
+import { ChangeSetPostPushEvent, IModelHubClient, IModelHubEventType } from "@bentley/imodelhub-client";
 import { ApplicationType, AuthorizedBackendRequestContext, BriefcaseDb, BriefcaseManager, IModelHost, IModelHostConfiguration } from "@bentley/imodeljs-backend";
 import { IModelVersion, SyncMode } from "@bentley/imodeljs-common";
+import * as fs from "fs";
+import * as path from "path";
 import { AgentConfig } from "./AgentConfig";
 import { flagLongLeadItems } from "./FlagLongLeadItems";
 import { sendEmail } from "./SendEmail";
@@ -11,7 +13,6 @@ export class MyAgent {
   private readonly hubClient: IModelHubClient;
   private readonly oidcClient: AgentAuthorizationClient;
 
-  private hubSubscription?: EventSubscription;
   private deleteEventListener?: () => void;
 
   constructor(config: AgentConfig) {
@@ -38,8 +39,21 @@ export class MyAgent {
     const eventTypes = [
       IModelHubEventType.ChangeSetPostPushEvent,
     ];
-    this.hubSubscription = await this.hubClient.events.subscriptions.create(ctx, this.config.IMODEL_ID, eventTypes);
-    console.log(`Event subscription "${this.hubSubscription.wsgId}" created in iModelHub.`);
+
+    const savedSubscriptionIdPath = path.join(__dirname, "SavedSubscriptionId");
+    let subscriptionId;
+    try {
+      subscriptionId = fs.readFileSync(savedSubscriptionIdPath).toString("utf8");
+    } catch (error) {
+      console.warn("Failed to read saved iModelHub Subscription ID.  Maybe this is the first run?");
+    }
+
+    if (!subscriptionId) {
+      subscriptionId = (await this.hubClient.events.subscriptions.create(ctx, this.config.IMODEL_ID, eventTypes)).wsgId;
+      console.log(`Event subscription "${subscriptionId}" created in iModelHub.`);
+    }
+
+    fs.writeFileSync(savedSubscriptionIdPath, subscriptionId, { encoding: "utf8" });
 
     // Define event listener
     const listener = async (event: ChangeSetPostPushEvent) => {
@@ -54,7 +68,7 @@ export class MyAgent {
 
     // Start listening to events
     const authCallback = () => this.oidcClient.getAccessToken();
-    this.deleteEventListener = this.hubClient.events.createListener(ctx, authCallback, this.hubSubscription.wsgId, this.config.IMODEL_ID, listener);
+    this.deleteEventListener = this.hubClient.events.createListener(ctx, authCallback, subscriptionId, this.config.IMODEL_ID, listener);
   }
 
   public async run(version = IModelVersion.latest()) {
@@ -89,12 +103,6 @@ export class MyAgent {
     if (this.deleteEventListener) {
       this.deleteEventListener();
       this.deleteEventListener = undefined;
-    }
-
-    if (this.hubSubscription) {
-      await this.hubClient.events.subscriptions.delete(await this.createContext(), this.config.IMODEL_ID, this.hubSubscription.wsgId);
-      console.log(`Event subscription "${this.hubSubscription.wsgId}" deleted in iModelHub.`);
-      this.hubSubscription = undefined;
     }
 
     await IModelHost.shutdown();
