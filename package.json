@@ -9,6 +9,7 @@
   "scripts": {
     "build": "tsc 1>&2",
     "start": "node ./lib/main.js",
+    "start:prod": "forever start ./lib/main.js",
     "debug": "node --inspect-brk=9229 ./lib/main.js",
     "clean": "rimraf lib",
     "lint": "tslint --project . 1>&2"
@@ -26,6 +27,7 @@
     "@bentley/itwin-client": "^2.3.0",
     "@sendgrid/mail": "^7.2.1",
     "dotenv": "^8.2.0",
+    "forever": "^3.0.0",
     "minimist": "^1.2.5",
     "onanykey": "^1.0.1",
     "react": "^16.13.1",

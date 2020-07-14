@@ -25,6 +25,8 @@ console.log("MY AGENT STARTED");
     } else {
       await agent.listen();
       console.log("MY AGENT NOW LISTENING FOR HUB EVENTS -- press any key to stop");
+      if (!process.stdout.isTTY)
+        return;
       await onAnyKey();
     }
 
