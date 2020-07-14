@@ -2,28 +2,23 @@
 {
   "editor.tabSize": 2,
   "files.exclude": {
-    "lib/**": 1,
-    "node_modules": 1,
-    ".vscode": true,
-    ".gitignore": true,
-    ".gitattributes": true,
-    "package-lock.json": true,
-    "tsconfig.json": true,
-    "tslint.json": true,
-    "LICENSE": true
+    "lib/**": true,
+    "node_modules": true,
+    ".vscode": false,
+    ".gitignore": false,
+    ".gitattributes": false,
+    "package-lock.json": false,
+    "tsconfig.json": false,
+    "tslint.json": false,
+    "LICENSE": false
   },
   "search.exclude": {
     "dist/**": true
   },
   "files.trimTrailingWhitespace": true,
   "typescript.tsdk": "node_modules\\typescript\\lib",
-  "files.associations": {
-    "**/.pipelines/**/*.yaml": "azure-pipelines"
-  },
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
     "source.organizeImports": true
-  },
-  "window.zoomLevel": 1,
-  "editor.fontSize": 16
+  }
 }
