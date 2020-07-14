@@ -51,9 +51,8 @@ export class MyAgent {
     if (!subscriptionId) {
       subscriptionId = (await this.hubClient.events.subscriptions.create(ctx, this.config.IMODEL_ID, eventTypes)).wsgId;
       console.log(`Event subscription "${subscriptionId}" created in iModelHub.`);
+      fs.writeFileSync(savedSubscriptionIdPath, subscriptionId, { encoding: "utf8" });
     }
-
-    fs.writeFileSync(savedSubscriptionIdPath, subscriptionId, { encoding: "utf8" });
 
     // Define event listener
     const listener = async (event: ChangeSetPostPushEvent) => {
